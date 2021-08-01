@@ -1,0 +1,14 @@
+{
+  "description": "Tracks tactics puzzle moves and attempts on chess.com for easier practice and review",
+  "manifest_version": 2,
+  "name": "ChessTracker",
+  "version": "1.0",
+  "homepage_url": "www.chesstracker.com",
+  "icons": {},
+  "content_scripts": [
+    {
+      "matches": ["*://*.chess.com/puzzles/learning"],
+      "js": ["chesstracker.js"]
+    }
+  ]
+}
