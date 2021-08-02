@@ -6,17 +6,27 @@
 	"icons": {
 		"64": "icons/icon.png"
 	},
+    "permissions" :
+    [
+        "webRequest",
+        "*://*.chess.com/callback/tactics/learning/next",
+        "*://*.chess.com/callback/tactics/themeTraining/submitMoves"
+    ],
+
 	"background": {
 		"scripts": [
+            "debug.js",
 			"background_script.js"
 		]
 	},
+
 	"content_scripts": [
 		{
 			"matches": [
-				"*://*.mozilla.org/*"
+				"*://*.chess.com/puzzles*"
 			],
 			"js": [
+				"debug.js",
 				"content_script.js"
 			]
 		}
