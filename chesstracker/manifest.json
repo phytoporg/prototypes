@@ -3,11 +3,11 @@
   "manifest_version": 2,
   "name": "ChessTracker",
   "version": "1.0",
-  "homepage_url": "www.chesstracker.com",
+  "homepage_url": "https://github.com/phytoporg/prototypes/tree/chesstracker/main/chesstracker",
   "icons": {},
   "content_scripts": [
     {
-      "matches": ["*://*.chess.com/puzzles/learning"],
+      "matches": ["*://*.chess.com/puzzles*"],
       "js": ["chesstracker.js"]
     }
   ]
