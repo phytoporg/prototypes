@@ -8,3 +8,8 @@ function debug_log(...args) {
     }
 };
 
+function debug_error(...args) {
+    if (ENABLE_DEBUG) {
+        console.error("[!][ChessBuddy]", ...args);
+    }
+};
