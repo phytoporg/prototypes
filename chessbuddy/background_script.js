@@ -17,3 +17,9 @@ browser.webRequest.onBeforeRequest.addListener(
     onSubmitMovesRequest,
     {urls: ["*://*.chess.com/callback/tactics/themeTraining/submitMoves"]}
 );
+
+function handleMessage(request, sender, sendResponse) {
+    debug_log("Message from the content script: " + request);
+}
+
+browser.runtime.onMessage.addListener(handleMessage);

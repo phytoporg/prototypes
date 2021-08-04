@@ -87,7 +87,7 @@ const callback = function(mutationsList, observer) {
 
 			for (const removedNode of mutation.removedNodes)
 			{
-				debug_verbose("Removed node: " + removedNodes.className);
+                debug_verbose("Removed node: " + removedNode.className);
 			}
         } else if (mutation.type === 'attributes') {
             var attributeName = mutation.attributeName;
@@ -124,12 +124,14 @@ const callback = function(mutationsList, observer) {
                     debug_log(
                         newPiece + " on square " + newSquare + 
                         " from " + oldSquare);
+                    SendPieceMovedMessage(newPiece, oldSquare, newSqure);
                 }
                 else if (!IsPiece(oldClassName) && IsPiece(newClassName))
                 {
                     var piece = GetPiece(newClassName);
                     var newSquare = GetSquare(newClassName);
                     debug_log(piece + " on square " + newSquare);
+                    SendPiecePlacedMessage(piece, newSqure);
                 }
                 else if (IsPiece(oldClassName) && !IsPiece(newClassName) &&
                          !newClassName.includes('dragging') &&
@@ -138,6 +140,7 @@ const callback = function(mutationsList, observer) {
                     var piece = GetPiece(oldClassName);
                     var oldSquare = GetSquare(oldClassName);
                     debug_log(piece + " removed from square " + oldSquare);
+                    SendPieceRemovedMessage(piece, oldSquare);
                 }
             }
             else

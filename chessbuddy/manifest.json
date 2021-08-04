@@ -15,8 +15,8 @@
 
 	"background": {
 		"scripts": [
-            "browser-polyfill.js",
             "debug.js",
+            "message_recv.js",
 			"background_script.js"
 		]
 	},
@@ -27,8 +27,9 @@
 				"*://*.chess.com/puzzles*"
 			],
 			"js": [
-				"browser-polyfill.js",
 				"debug.js",
+				"messages.js",
+				"message_send.js",
 				"content_script.js"
 			]
 		}
