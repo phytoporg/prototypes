@@ -1,9 +1,9 @@
-// Let's just see if this works
+// A quick visual indicator that things are working
 document.body.style.border = "5px solid blue";
 
 // Select the node that will be observed for mutations
-const targetNode = document.getElementById("board-board");
-for (const childNode of targetNode.children) {
+const boardNode = document.getElementById("board-board");
+for (const childNode of boardNode.children) {
     debug_log("Initial board state: " + childNode.className);
 }
 
@@ -27,6 +27,16 @@ function IsPiece(className) {
     return true;
 }
 
+function IsHighlight(className) {
+    var tokens = className.split(' ');
+    for (const token of tokens)
+    {
+        if (token === 'highlight') { return true; }
+    }
+
+    return false;
+}
+
 // Assumes that this is already known to be a valid piece!
 function GetPiece(className) {
     var tokens = className.split(' ');
@@ -37,7 +47,7 @@ function GetPiece(className) {
         }
     }
 
-    debug_error("Shouldn't be here - GetPiece()");
+    debug_verbose("GetPiece() - no token found in " + className);
     return null;
 }
 
@@ -50,9 +60,12 @@ function GetSquare(className) {
         }
     }
 
-    debug_error("Shouldn't be here - GetSquare()");
+    debug_verbose("GetSquare() - no token found in " + className);
     return null;
 }
+
+// Track the last highlighted node
+var lastHighlightSquare = "";
 
 // Callback function to execute when mutations are observed
 const callback = function(mutationsList, observer) {
@@ -61,20 +74,28 @@ const callback = function(mutationsList, observer) {
         if (mutation.type === 'childList') {
 			for (const addedNode of mutation.addedNodes)
 			{
-				debug_log("Added node: " + addedNode.className);
+                if (IsHighlight(addedNode.className))
+                {
+                    lastHighlightSquare = GetSquare(addedNode.className);
+                    debug_log("New highlight square: " + lastHighlightSquare);
+                }
+                else
+                {
+                    debug_verbose("Added node: " + addedNode.className);
+                }
 			}
 
 			for (const removedNode of mutation.removedNodes)
 			{
-				debug_log("Removed node: " + removedNodes.className);
+				debug_verbose("Removed node: " + removedNodes.className);
 			}
         } else if (mutation.type === 'attributes') {
             var attributeName = mutation.attributeName;
             if (attributeName === 'class') {
-                // debug_log("Class change: " +
-                //     mutation.oldValue +
-                //     " => " + 
-                //     mutation.target.attributes[mutation.attributeName].value);
+                 debug_superverbose("Class change: " +
+                     mutation.oldValue +
+                     " => " + 
+                     mutation.target.attributes[mutation.attributeName].value);
 
                 // Let's start by figuring out the destination piece, then
                 // we'll figure out the source square, eh?
@@ -86,6 +107,19 @@ const callback = function(mutationsList, observer) {
                     var newPiece = GetPiece(newClassName);
 
                     var oldSquare = GetSquare(oldClassName);
+                    if (oldSquare == null)
+                    {
+                        // The player is dropping a piece from clicking and
+                        // dragging, so the old piece class is unassigned.
+                        // 
+                        // For now, assume that the last highlighted square
+                        // is the correct source square.
+                        if (lastHighlightSquare !== "")
+                        {
+                            oldSquare = lastHighlightSquare;
+                        }
+                    }
+
                     var newSquare = GetSquare(newClassName);
                     debug_log(
                         newPiece + " on square " + newSquare + 
@@ -108,12 +142,15 @@ const callback = function(mutationsList, observer) {
             }
             else
             {
-                // debug_log("Attribute change: " + mutation.attributeName +
-                // " - " +  mutation.oldValue +
-                // " => " + mutation.target.attributes[mutation.attributeName].value);
+                debug_superverbose("Attribute change: " + 
+                    mutation.attributeName +
+                    " - " +  
+                    mutation.oldValue +
+                    " => " + 
+                    mutation.target.attributes[mutation.attributeName].value);
             }
         } else {
-            debug_log("Untracked mutation type: " + mutation.type);
+            debug_verbose("Untracked mutation type: " + mutation.type);
         }
     }
 };
@@ -122,4 +159,4 @@ const callback = function(mutationsList, observer) {
 const observer = new MutationObserver(callback);
 
 // Start observing the target node for configured mutations
-observer.observe(targetNode, config);
+observer.observe(boardNode, config);
