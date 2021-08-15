@@ -1,5 +1,7 @@
 // Put all the javascript code here, that you want to execute in background.
 
+var boardState = new BoardState();
+
 function onNextTacticRequest(req) {
     debug_log("Getting new tactics puzzle: " + req.url);
 }
@@ -20,6 +22,13 @@ browser.webRequest.onBeforeRequest.addListener(
 
 function handleMessage(request, sender, sendResponse) {
     var type = MessageTypeToString.get(request.type);
+    if (request.type === MessageType.ClearBoard)
+    {
+        debug_log("Clearing the board");
+        boardState = new BoardState();
+        return;
+    }
+
     var piece = request.piece;
     debug_log("Message from the content script:");
     debug_log(`\ttype = ${type}`);
@@ -31,6 +40,20 @@ function handleMessage(request, sender, sendResponse) {
         var toSquare = request.toSquare;
         debug_log(`\tfromSquare = ${fromSquare}`);
         debug_log(`\ttoSquare = ${toSquare}`);
+        boardState.movePiece(fromSquare, toSquare);
+
+        return;
+    }
+
+    var square = request.square;
+    debug_log(`\tsquare = ${square}`);
+    if (request.type == MessageType.PieceRemoved)
+    {
+        boardState.removePiece(square);
+    }
+    else if (request.type == MessageType.PiecePlaced)
+    {
+        boardState.setPiece(square, piece);
     }
 }
 

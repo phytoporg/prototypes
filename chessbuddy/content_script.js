@@ -1,22 +1,6 @@
 // A quick visual indicator that things are working
 document.body.style.border = "5px solid blue";
 
-// Select the node that will be observed for mutations
-const boardNode = document.getElementById("board-board");
-for (const childNode of boardNode.children) {
-    debug_log("Initial board state: " + childNode.className);
-}
-
-// TODO: probably don't need to enable all of these
-const config = { 
-    characterData: true,
-    attributeOldValue: true,
-    characterDataOldValue: true,
-    attributes: true,
-    childList: true,
-    subtree: true 
-};
-
 function IsPiece(className) {
     var tokens = className.split(' ');
     if (tokens.length != 3 || (tokens.length > 0 && tokens[0] !== 'piece'))
@@ -67,8 +51,22 @@ function GetSquare(className) {
 // Track the last highlighted node
 var lastHighlightSquare = "";
 
+// Select the node that will be observed for mutations
+const boardNode = document.getElementById("board-board");
+for (const childNode of boardNode.children) {
+    var className = childNode.className;
+    debug_log("Initial board state: " + className);
+    if (IsPiece(className))
+    {
+        var piece = GetPiece(className)
+        var square = GetSquare(className)
+        SendPiecePlacedMessage(piece, square);
+    }
+}
+
 // Callback function to execute when mutations are observed
 const callback = function(mutationsList, observer) {
+    debug_superverbose("Enter mutation callback");
     // Use traditional 'for loops' for IE 11
     for(const mutation of mutationsList) {
         if (mutation.type === 'childList') {
@@ -124,14 +122,14 @@ const callback = function(mutationsList, observer) {
                     debug_log(
                         newPiece + " on square " + newSquare + 
                         " from " + oldSquare);
-                    SendPieceMovedMessage(newPiece, oldSquare, newSqure);
+                    SendPieceMovedMessage(newPiece, oldSquare, newSquare);
                 }
                 else if (!IsPiece(oldClassName) && IsPiece(newClassName))
                 {
                     var piece = GetPiece(newClassName);
                     var newSquare = GetSquare(newClassName);
                     debug_log(piece + " on square " + newSquare);
-                    SendPiecePlacedMessage(piece, newSqure);
+                    SendPiecePlacedMessage(piece, newSquare);
                 }
                 else if (IsPiece(oldClassName) && !IsPiece(newClassName) &&
                          !newClassName.includes('dragging') &&
@@ -156,10 +154,21 @@ const callback = function(mutationsList, observer) {
             debug_verbose("Untracked mutation type: " + mutation.type);
         }
     }
+    debug_superverbose("Exit mutation callback");
 };
 
 // Create an observer instance linked to the callback function
 const observer = new MutationObserver(callback);
 
 // Start observing the target node for configured mutations
+// TODO: probably don't need to enable all of these
+const config = { 
+    characterData: true,
+    attributeOldValue: true,
+    characterDataOldValue: true,
+    attributes: true,
+    childList: true,
+    subtree: true 
+};
+
 observer.observe(boardNode, config);
