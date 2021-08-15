@@ -16,6 +16,7 @@
 	"background": {
 		"scripts": [
             "debug.js",
+            "messages.js",
             "message_recv.js",
 			"background_script.js"
 		]

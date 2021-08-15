@@ -15,7 +15,7 @@ function SendPieceRemovedMessage(pieceName, square) {
         square: square
     };
 
-    browser.runtime.send(messagePayload).then(handleResponse, handleError);
+    browser.runtime.sendMessage(messagePayload).then(handleResponse, handleError);
 }
 
 function SendPiecePlacedMessage(pieceName, square) {
@@ -25,7 +25,7 @@ function SendPiecePlacedMessage(pieceName, square) {
         square: square
     };
 
-    browser.runtime.send(messagePayload).then(handleResponse, handleError);
+    browser.runtime.sendMessage(messagePayload).then(handleResponse, handleError);
 }
 
 function SendPieceMovedMessage(pieceName, fromSquare, toSquare) {
@@ -36,5 +36,5 @@ function SendPieceMovedMessage(pieceName, fromSquare, toSquare) {
         toSquare: toSquare
     };
 
-    browser.runtime.send(messagePayload).then(handleResponse, handleError);
+    browser.runtime.sendMessage(messagePayload).then(handleResponse, handleError);
 }

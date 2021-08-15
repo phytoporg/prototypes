@@ -11,3 +11,9 @@ const MessageType =
     // A piece was moved from one square to another
     PieceMoved   : 2
 };
+
+const MessageTypeToString = new Map([
+    [MessageType.PieceRemoved, "PieceRemoved"],
+    [MessageType.PiecePlaced, "PiecePlaced"],
+    [MessageType.PieceMoved, "PieceMoved"]
+]);
