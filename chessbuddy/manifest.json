@@ -17,7 +17,6 @@
 		"scripts": [
             "debug.js",
             "messages.js",
-            "message_recv.js",
             "boardstate.js",
 			"background_script.js"
 		]
