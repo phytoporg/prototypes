@@ -5,47 +5,55 @@ class BoardState {
     }
 
     removePiece(squareString) {
-        var file = parseInt(squareString[0]);
-        var rank = parseInt(squareString[1]);
+        var file = parseInt(squareString[0]) - 1;
+        var rank = parseInt(squareString[1]) - 1;
 
         var index = rank * 8 + file;
         this.board[index] = "";
+        debug_verbose(this.debugString());
     }
 
     setPiece(squareString, pieceType) {
-        var file = parseInt(squareString[0]);
-        var rank = parseInt(squareString[1]);
+        var file = parseInt(squareString[0]) - 1;
+        var rank = parseInt(squareString[1]) - 1;
 
         var index = rank * 8 + file;
         this.board[index] = 
             (pieceType[0] === 'w' ? pieceType[1].toUpperCase() : pieceType[1]);
+        debug_verbose(this.debugString());
     }
 
     movePiece(squareStringFrom, squareStringTo) {
-        var fromFile = parseInt(squareStringFrom[0]);
-        var fromRank = parseInt(squareStringFrom[1]);
+        if (squareStringTo === squareStringFrom) {
+            return;
+        }
+
+        var fromFile = parseInt(squareStringFrom[0]) - 1;
+        var fromRank = parseInt(squareStringFrom[1]) - 1;
         var fromIndex = fromRank * 8 + fromFile;
 
-        var toFile = parseInt(squareStringTo[0]);
-        var toRank = parseInt(squareStringTo[1]);
+        var toFile = parseInt(squareStringTo[0]) - 1;
+        var toRank = parseInt(squareStringTo[1]) - 1;
         var toIndex = toRank * 8 + toFile;
 
         this.board[toIndex] = this.board[fromIndex]
         this.board[fromIndex] = "";
+
+        debug_verbose(this.debugString());
     }
 
-    toString() {
+    debugString() {
         var stringBuilder = "";
-        for (let i = 0; i < 8; ++i)
+        for (let i = 7; i >= 0; --i)
         {
-            stringBuilder += "[ ";
+            stringBuilder += "\n[ ";
             for (let j = 0; j < 8; ++j) {
-                var thisSquare = this.board[j * 8 + i];
+                var thisSquare = this.board[i * 8 + j];
                 if (thisSquare === "") {
-                    stringBuilder += "  ";
+                    stringBuilder += "- ";
                 }
                 else {
-                    stringBuilder += pieceString + " ";
+                    stringBuilder += thisSquare + " ";
                 }
             }
             stringBuilder += "]";

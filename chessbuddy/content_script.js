@@ -2,6 +2,10 @@
 document.body.style.border = "5px solid blue";
 
 function IsPiece(className) {
+    if (!(typeof className === 'string')) {
+        return false;
+    }
+
     var tokens = className.split(' ');
     if (tokens.length != 3 || (tokens.length > 0 && tokens[0] !== 'piece'))
     {
@@ -54,13 +58,16 @@ var lastHighlightSquare = "";
 // Select the node that will be observed for mutations
 const boardNode = document.getElementById("board-board");
 for (const childNode of boardNode.children) {
+    if (!("className" in childNode)) {
+        continue;
+    }
+
     var className = childNode.className;
-    debug_log("Initial board state: " + className);
-    if (IsPiece(className))
-    {
-        var piece = GetPiece(className)
-        var square = GetSquare(className)
+    if (IsPiece(className)) {
+        var piece = GetPiece(className);
+        var square = GetSquare(className);
         SendPiecePlacedMessage(piece, square);
+        debug_log("Placing piece " + piece + " on square " + square);
     }
 }
 

@@ -26,7 +26,8 @@ function handleMessage(request, sender, sendResponse) {
     {
         debug_log("Clearing the board");
         boardState = new BoardState();
-        return;
+        sendResponse({ response: "Cleared the board" });
+        return true;
     }
 
     var piece = request.piece;
@@ -34,27 +35,34 @@ function handleMessage(request, sender, sendResponse) {
     debug_log(`\ttype = ${type}`);
     debug_log(`\tpiece = ${piece}`);
 
-    if (request.type == MessageType.PieceMoved)
+    if (request.type === MessageType.PieceMoved)
     {
         var fromSquare = request.fromSquare;
         var toSquare = request.toSquare;
         debug_log(`\tfromSquare = ${fromSquare}`);
         debug_log(`\ttoSquare = ${toSquare}`);
         boardState.movePiece(fromSquare, toSquare);
-
-        return;
+        sendResponse({ response: `Moved ${piece} from ${fromSquare} to ${toSquare}`});
+        return true;
     }
 
     var square = request.square;
     debug_log(`\tsquare = ${square}`);
-    if (request.type == MessageType.PieceRemoved)
+    if (request.type === MessageType.PieceRemoved)
     {
         boardState.removePiece(square);
+        sendResponse({ response: `Removed ${piece} from ${square}` });
+        return true;
     }
-    else if (request.type == MessageType.PiecePlaced)
+    else if (request.type === MessageType.PiecePlaced)
     {
         boardState.setPiece(square, piece);
+        sendResponse({ response: `Set piece ${piece} to ${square}`});
+        return true;
     }
+
+    sendResponse({ response: "unhandled: " + type });
+    return false;
 }
 
 browser.runtime.onMessage.addListener(handleMessage);

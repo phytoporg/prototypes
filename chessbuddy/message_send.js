@@ -1,7 +1,13 @@
 // Message sending functionality lives here
 
 function handleResponse(message) {
-	debug_verbose("Response from the background script.");
+    if (message) {
+        debug_verbose(`Response from the background script: ${message.response}`);
+    }
+    else
+    {
+        debug_verbose("Message is undefined");
+    }
 }
 
 function handleError(error) {
