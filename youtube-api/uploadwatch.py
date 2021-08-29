@@ -1,5 +1,6 @@
 from auth import *
 from burnt_toast import *
+from deps import *
 import argparse
 import os
 import json
@@ -13,11 +14,11 @@ DEFAULT_POLLING_FREQUENCY_SECONDS = 200
 # Turn on for debugging
 ENABLE_LOGS = False
 
-def log(string):
+def _log(string):
     if ENABLE_LOGS:
         print(string)
 
-def collect_processing_videos(yt, playlist_id):
+def _collect_processing_videos(yt, playlist_id):
     request = yt.playlistItems().list(part='contentDetails', playlistId=playlist_id, maxResults=20)
     result = request.execute()
 
@@ -66,11 +67,11 @@ def main(args):
     playlist_id = result['items'][0]['contentDetails']['relatedPlaylists']['uploads']
 
     wait_time_seconds = DEFAULT_POLLING_FREQUENCY_SECONDS
-    completed_videos, processing_videos = collect_processing_videos(yt, playlist_id)
+    completed_videos, processing_videos = _collect_processing_videos(yt, playlist_id)
     while True:
-        log(f'Found {len(processing_videos)} processing videos after waiting {wait_time_seconds} seconds.')
+        _log(f'Found {len(processing_videos)} processing videos after waiting {wait_time_seconds} seconds.')
         if len(processing_videos) > 0:
-            log(json.dumps(processing_videos[0], indent=4))
+            _log(json.dumps(processing_videos[0], indent=4))
             if 'processingProgress' in processing_videos[0]['processingDetails']:
                 next_to_complete = \
                     min(
@@ -85,7 +86,7 @@ def main(args):
         time.sleep(next_wait_time_seconds)
 
         last_completed_item = max(completed_videos, key=_snippet_published_datetime)
-        completed_videos, processing_videos = collect_processing_videos(yt, playlist_id)
+        completed_videos, processing_videos = _collect_processing_videos(yt, playlist_id)
 
         # Check if we've published anything new since the last time we checked
         next_completed_item = max(completed_videos, key=_snippet_published_datetime)
@@ -99,15 +100,19 @@ def main(args):
                 processing_details = newly_completed['processingDetails']
                 video_title = newly_completed['snippet']['title']
                 if processing_details['processingStatus'] == 'failed':
-                    log(json.dumps(newly_completed), indent=4)
+                    _log(json.dumps(newly_completed), indent=4)
                     signal_toast('Upload failed', video_title)
                 elif processing_details['processingStatus'] == 'succeeded':    
                     signal_toast('Upload succeeded', video_title)
-                    log(f'Succeeded: {video_title}')
+                    _log(f'Succeeded: {video_title}')
         else:
-            log('Found no successfully processed videos since we last checked.')
+            _log('Found no successfully processed videos since we last checked.')
 
 if __name__ == '__main__':
+    print('Checking installation dependencies. You may get a prompt for elevated privileges.')
+    get_dependencies()
+    print('Done!')
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--secrets-file', type=str, required=True)
 

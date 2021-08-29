@@ -3,7 +3,6 @@ import sys
 import subprocess
 
 def _check_dependencies():
-    # powershell -c "if (-not (Get-Module -ListAvailable -Name BurntToast)) { exit -1 }" 
     cmd_to_exec = 'powershell -c "if (-not (Get-Module -ListAvailable -Name BurntToast)) { exit -1 }"'
     try:
         subprocess.run(cmd_to_exec, shell=True, check=True)
