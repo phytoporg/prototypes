@@ -8,3 +8,7 @@ def _exec_powershell(powershell_command):
 def signal_toast(text):
     base_cmd = "New-BurntToastNotification"
     _exec_powershell(f"{base_cmd} -Text '{text}'")
+
+def signal_toast(title, text):
+    base_cmd = "New-BurntToastNotification"
+    _exec_powershell(f"{base_cmd} -Text '{title}', '{text}'")
